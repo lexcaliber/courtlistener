@@ -2846,6 +2846,30 @@ class OpinionsCited(models.Model):
         unique_together = ("citing_opinion", "cited_opinion")
 
 
+class Parenthetical(models.Model):
+    describing_opinion = models.ForeignKey(
+        Opinion,
+        related_name="authored_parentheticals",
+        on_delete=models.CASCADE,
+    )
+    described_opinion = models.ForeignKey(
+        Opinion, related_name="parentheticals", on_delete=models.CASCADE
+    )
+    text = models.TextField(
+        help_text="The text of the description as written in the describing opinion",
+    )
+    usefulness_score = models.FloatField(
+        db_index=True,
+        help_text="A score between 0 and 1 representing how descriptive the parenthetical is",
+    )
+
+    def __str__(self) -> str:
+        return f"{self.describing_opinion.id} description of {self.described_opinion.id}: {self.text}"
+
+    class Meta:
+        verbose_name_plural = "Opinion parentheticals"
+
+
 TaggableType = TypeVar("TaggableType", Docket, DocketEntry, RECAPDocument)
 
 
