@@ -526,6 +526,24 @@ def view_opinion(request: HttpRequest, pk: int, _: str) -> HttpResponse:
 
 
 @ratelimit_if_not_whitelisted
+def view_summaries(request: HttpRequest, pk: int, slug: str) -> HttpResponse:
+    cluster = get_object_or_404(OpinionCluster, pk=pk)
+
+    return render(
+        request,
+        "view_opinion_summaries.html",
+        {
+            "title": "%s, %s"
+            % (trunc(best_case_name(cluster), 100), cluster.citation_string),
+            "cluster": cluster,
+            "private": cluster.blocked,
+            "summaries": cluster.parentheticals,
+            "summaries_count": cluster.parentheticals.count(),
+        },
+    )
+
+
+@ratelimit_if_not_whitelisted
 def view_authorities(request: HttpRequest, pk: int, slug: str) -> HttpResponse:
     cluster = get_object_or_404(OpinionCluster, pk=pk)
 
