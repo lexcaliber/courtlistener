@@ -2236,6 +2236,14 @@ class OpinionCluster(AbstractDateTimeModel):
         ).order_by("-citation_count", "-date_filed")
 
     @property
+    def parentheticals(self):
+        return Parenthetical.objects.filter(
+            described_opinion_id__in=self.sub_opinions.values_list(
+                "pk", flat=True
+            )
+        ).order_by("-score")
+
+    @property
     def authority_count(self):
         return self.authorities.count()
 
@@ -2858,13 +2866,13 @@ class Parenthetical(models.Model):
     text = models.TextField(
         help_text="The text of the description as written in the describing opinion",
     )
-    usefulness_score = models.FloatField(
+    score = models.FloatField(
         db_index=True,
         help_text="A score between 0 and 1 representing how descriptive the parenthetical is",
     )
 
     def __str__(self) -> str:
-        return f"{self.describing_opinion.id} description of {self.described_opinion.id}: {self.text}"
+        return f"{self.describing_opinion.id} description of {self.described_opinion.id} (score {self.score}): {self.text}"
 
     class Meta:
         verbose_name_plural = "Opinion parentheticals"
