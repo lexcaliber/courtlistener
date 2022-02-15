@@ -34,6 +34,7 @@ class Migration(migrations.Migration):
                     models.FloatField(
                         db_index=True,
                         help_text="A score between 0 and 1 representing how descriptive the parenthetical is",
+                        default=0.0
                     ),
                 ),
                 (
